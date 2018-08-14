@@ -26,7 +26,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.sociallogin.instagram.InstagramLoginManager.REDIRECT_URI;
 
 /**
  * Created by RISHABH on 8/8/18.
@@ -34,6 +33,17 @@ import static com.sociallogin.instagram.InstagramLoginManager.REDIRECT_URI;
 public class MyWebViewClient extends WebViewClient {
     private String code;
     private WebViewClientListener listener;
+    private String redirectUri;
+    private String clientSecret;
+    private String clientId;
+    private String tokenUrl;
+
+    MyWebViewClient(String clientId, String clientSecret, String redirectUri, String tokenUrl) {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.redirectUri = redirectUri;
+        this.tokenUrl = tokenUrl;
+    }
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -44,7 +54,7 @@ public class MyWebViewClient extends WebViewClient {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-        if (request.getUrl().toString().startsWith(REDIRECT_URI)) {
+        if (request.getUrl().toString().startsWith(redirectUri)) {
             handleUrl(request.getUrl().toString());
             return true;
         }
@@ -53,7 +63,7 @@ public class MyWebViewClient extends WebViewClient {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        if (url.startsWith(REDIRECT_URI)) {
+        if (url.startsWith(redirectUri)) {
             handleUrl(url);
             return true;
         }
@@ -66,6 +76,7 @@ public class MyWebViewClient extends WebViewClient {
         listener.onPageFinished();
     }
 
+    @SuppressWarnings("unused")
     private void handleUrl(String url) {
         if (url.contains("code")) {
             listener.showProgress();
@@ -73,16 +84,16 @@ public class MyWebViewClient extends WebViewClient {
             code = temp[1];
 
             DisposableObserver<InstagramModel> disposableObserver = Observable.fromCallable(() -> {
-                URL url1 = new URL(InstagramLoginManager.TOKEN_URL);
+                URL url1 = new URL(tokenUrl);
                 HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url1.openConnection();
                 httpsURLConnection.setRequestMethod("POST");
                 httpsURLConnection.setDoInput(true);
                 httpsURLConnection.setDoOutput(true);
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(httpsURLConnection.getOutputStream());
-                outputStreamWriter.write("client_id=" + InstagramLoginManager.CLIENT_ID +
-                        "&client_secret=" + InstagramLoginManager.CLIENT_SECRET +
+                outputStreamWriter.write("client_id=" + clientId +
+                        "&client_secret=" + clientSecret +
                         "&grant_type=authorization_code" +
-                        "&redirect_uri=" + REDIRECT_URI +
+                        "&redirect_uri=" + redirectUri +
                         "&code=" + code);
 
                 outputStreamWriter.flush();

@@ -12,18 +12,24 @@ import com.sociallogin.R;
  * Created by RISHABH on 8/8/18.
  */
 public class InstagramLoginManager implements WebViewClientListener {
-    private Context context;
     private Dialog dialog;
     private ProgressDialog progressBar;
+    private String redirectUri;
+    private String clientSecret;
+    private String clientId;
+    private Context context;
+    private String tokenUrl;
+    private String authUrl;
     private InstagramLoginListener instagramLoginListener;
-    static final String REDIRECT_URI = "";
-    static final String CLIENT_SECRET = "";
-    static final String CLIENT_ID = "";
-    static final String TOKEN_URL = String.format("https://api.instagram.com/oauth/access_token?client_id=%s&client_secret=%s&redirect_uri=%s&grant_type=authorization_code", CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
-    private static final String AUTH_URL = "https://instagram.com/oauth/authorize/?client_id=" + CLIENT_ID + "&redirect_uri=" + REDIRECT_URI + "&response_type=code&display=touch";
 
-    private InstagramLoginManager(Context context) {
-        this.context = context;
+    private InstagramLoginManager(Builder builder) {
+        this.context = builder.context;
+        this.clientId = builder.clientId;
+        this.redirectUri = builder.redirectUri;
+        this.clientSecret = builder.clientSecret;
+        this.instagramLoginListener = builder.instagramLoginListener;
+        tokenUrl = String.format("https://api.instagram.com/oauth/access_token?client_id=%s&client_secret=%s&redirect_uri=%s&grant_type=authorization_code", clientId, clientSecret, redirectUri);
+        authUrl = String.format("https://instagram.com/oauth/authorize/?client_id=%s&redirect_uri=%s&response_type=code&display=touch", clientId, redirectUri);
         setUpProgressBar();
     }
 
@@ -32,23 +38,18 @@ public class InstagramLoginManager implements WebViewClientListener {
         progressBar.setMessage(context.getString(R.string.text_loading));
     }
 
-    public static InstagramLoginManager getInstance(Context context) {
-        return new InstagramLoginManager(context);
-    }
-
     @SuppressLint("SetJavaScriptEnabled")
-    public InstagramLoginManager login() {
+    public void login() {
         dialog = new Dialog(context);
         WebView webView = new WebView(context);
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
-        MyWebViewClient myWebViewClient = new MyWebViewClient();
+        MyWebViewClient myWebViewClient = new MyWebViewClient(clientId, clientSecret, redirectUri, tokenUrl);
         myWebViewClient.setListener(this);
         webView.setWebViewClient(myWebViewClient);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl(AUTH_URL);
+        webView.loadUrl(authUrl);
         dialog.setContentView(webView);
-        return this;
     }
 
 
@@ -79,7 +80,40 @@ public class InstagramLoginManager implements WebViewClientListener {
         progressBar.show();
     }
 
-    public void addLoginListener(InstagramLoginListener instagramLoginListener) {
-        this.instagramLoginListener = instagramLoginListener;
+    static class Builder {
+        private String redirectUri = "";
+        private String clientSecret = "";
+        private String clientId = "";
+        private Context context;
+        private InstagramLoginListener instagramLoginListener;
+
+        public Builder with(final Context context) {
+            this.context = context;
+            return this;
+        }
+
+        public Builder setRedirectUri(final String redirectUri) {
+            this.redirectUri = redirectUri;
+            return this;
+        }
+
+        public Builder setClientSecret(final String clientSecret) {
+            this.clientSecret = clientSecret;
+            return this;
+        }
+
+        public Builder setClientId(final String clientId) {
+            this.clientId = clientId;
+            return this;
+        }
+
+        public Builder setListener(final InstagramLoginListener listener) {
+            this.instagramLoginListener = listener;
+            return this;
+        }
+
+        public InstagramLoginManager create() {
+            return new InstagramLoginManager(this);
+        }
     }
 }
