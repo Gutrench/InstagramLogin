@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.text.TextUtils;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -195,21 +194,7 @@ public class InstagramWebViewClient extends WebViewClient {
         }
 
         public InstagramWebViewClient build() {
-            InstagramWebViewClient instagramWebViewClient = new InstagramWebViewClient(this);
-            if (TextUtils.isEmpty(instagramWebViewClient.REDIRECT_URI)) {
-                throw new IllegalStateException(
-                        "Please set redirect URI");
-            } else if (TextUtils.isEmpty(instagramWebViewClient.CLIENT_ID)) {
-                throw new IllegalStateException(
-                        "Please set client id");
-            } else if (TextUtils.isEmpty(instagramWebViewClient.CLIENT_SECRET)) {
-                throw new IllegalStateException(
-                        "Please set client secret");
-            } else if (TextUtils.isEmpty(instagramWebViewClient.TOKEN_URL)) {
-                throw new IllegalStateException(
-                        "Token URL can not be null");
-            }
-            return instagramWebViewClient;
+            return new InstagramWebViewClient(this);
         }
     }
 }
