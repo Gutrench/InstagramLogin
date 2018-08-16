@@ -2,9 +2,6 @@ package com.sociallogin.instagram;
 
 import java.io.Serializable;
 
-/**
- * Created by RISHABH on 8/8/18.
- */
 @SuppressWarnings("unused")
 public class InstagramModel implements Serializable {
 

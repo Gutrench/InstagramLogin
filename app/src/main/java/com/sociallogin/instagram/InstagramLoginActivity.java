@@ -36,7 +36,7 @@ public class InstagramLoginActivity extends AppCompatActivity {
                         .setClientId(Utils.getProperty("CLIENT_ID", InstagramLoginActivity.this))
                         .setClientSecret(Utils.getProperty("CLIENT_SECRET", InstagramLoginActivity.this))
                         .setRedirectUri(Utils.getProperty("REDIRECT_URI", InstagramLoginActivity.this))
-                        .setListener(instagramLoginListener).create();
+                        .setListener(instagramLoginListener).build();
                 instagramLoginManager.login();
             } catch (IOException e) {
                 e.printStackTrace();

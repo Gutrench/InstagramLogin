@@ -7,9 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.sociallogin.instagram.InstagramLoginActivity;
 
-/**
- * Created by RISHABH on 8/8/18.
- */
 public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -21,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private void setActionListener() {
         findViewById(R.id.instagram_login_btn).
                 setOnClickListener(view -> startActivity(
-                        new Intent(MainActivity.this, InstagramLoginActivity.class)));
+                        new Intent(MainActivity.this,
+                                InstagramLoginActivity.class)));
     }
 }

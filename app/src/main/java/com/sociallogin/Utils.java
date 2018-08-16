@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-/**
- * Created by RISHABH on 10/8/18.
- */
 public class Utils {
     public static String getProperty(String key, Context context) throws IOException {
         Properties properties = new Properties();
